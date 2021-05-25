@@ -42,6 +42,12 @@ payonline_env_from_configmap:
        configMapKeyRef:
          name: payonline-conf
          key: E2EM_LINE
+   - name: PAYONLINE_MAIL_SF_RECIPIENTS
+     valueFrom:
+       configMapKeyRef:
+         name: payonline-conf
+         key: PAYONLINE_MAIL_SF_RECIPIENTS
+
 payonline_mail_sf_recipients:
   preprod:
     - dominique.quatravaux@epfl.ch
@@ -52,3 +58,6 @@ payonline_mail_sf_recipients:
     - pierre.fournier@epfl.ch
     - barbara.bouteiller@epfl.ch
     - ana.henriques@epfl.ch
+
+payonline_extract_transaction_cron_schedule: >-
+  05 0 * * *

@@ -161,3 +161,43 @@
   tags:
     - payonline.k8s.dc
     - payonline.k8s.deploymentconfig
+
+- name: Cron job
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: batch/v1beta1
+      kind: CronJob
+      metadata:
+        name: payonline-extract-transactions
+        namespace: "{{ openshift_namespace }}"
+      spec:
+        schedule: "{{ _all_the_time if payonline_debug_crontab is defined else payonline_extract_transaction_cron_schedule }}"
+        concurrencyPolicy: "Replace"
+        startingDeadlineSeconds: 200
+        suspend: false
+        successfulJobsHistoryLimit: 3
+        failedJobsHistoryLimit: 1
+        jobTemplate:
+          spec:
+            template:
+              spec:
+                containers:
+                - name: payonline-extract-transactions
+                  env: "{{ payonline_env_from_configmap }}"
+                  image: "{{ openshift_image }}"
+                  imagePullPolicy: Always
+                  volumeMounts:
+                    - mountPath: /opt/dinfo/etc
+                      name: payonline-secret-volume
+                  command:
+                    - /opt/dinfo/scripts/extract_transactions
+                volumes:
+                  - name: payonline-secret-volume
+                    secret:
+                      secretName: payonline-secrets
+                restartPolicy: Never
+  vars:
+    _all_the_time: "* * * * *"
+  tags:
+    - payonline.k8s.cron
