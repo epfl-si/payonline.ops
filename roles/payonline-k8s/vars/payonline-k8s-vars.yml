@@ -14,6 +14,28 @@ openshift_image_tag: >-
 openshift_image: >-
   docker-registry.default.svc:5000/{{ openshift_namespace }}/payonline:{{ openshift_image_tag }}
 
+# TODO: metaprogram this?
+payonline_env_from_configmap:
+   - name: TEQUILA_HOST
+     valueFrom:
+       configMapKeyRef:
+         name: payonline-conf
+         key: TEQUILA_HOST
+   - name: MOCK_ORACLE
+     valueFrom:
+       configMapKeyRef:
+         name: payonline-conf
+         key: MOCK_ORACLE
+   - name: SITE_URL
+     valueFrom:
+       configMapKeyRef:
+         name: payonline-conf
+         key: SITE_URL
+   - name: E2EM_LINE
+     valueFrom:
+       configMapKeyRef:
+         name: payonline-conf
+         key: E2EM_LINE
 payonline_mail_sf_recipients:
   preprod:
     - dominique.quatravaux@epfl.ch

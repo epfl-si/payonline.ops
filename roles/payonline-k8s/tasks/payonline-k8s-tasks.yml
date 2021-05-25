@@ -140,34 +140,10 @@
               deploymentconfig: payonline
           spec:
             containers:
-              - env:
-                  - name: TEQUILA_HOST
-                    valueFrom:
-                      configMapKeyRef:
-                        key: TEQUILA_HOST
-                        name: payonline-conf
-                  - name: MOCK_ORACLE
-                    valueFrom:
-                      configMapKeyRef:
-                        key: MOCK_ORACLE
-                        name: payonline-conf
-                  - name: SITE_URL
-                    valueFrom:
-                      configMapKeyRef:
-                        key: SITE_URL
-                        name: payonline-conf
-                  - name: E2EM_LINE
-                    valueFrom:
-                      configMapKeyRef:
-                        key: E2EM_LINE
-                        name: payonline-conf
-                image: >-
-                  {{ openshift_image }}
+              - env: "{{ payonline_env_from_configmap }}"
+                image: "{{ openshift_image }}"
                 imagePullPolicy: Always
                 name: payonline
-                resources: {}
-                terminationMessagePath: /dev/termination-log
-                terminationMessagePolicy: File
                 volumeMounts:
                   - mountPath: /opt/dinfo/etc
                     name: payonline-secret-volume
