@@ -9,3 +9,5 @@ keybase_secrets:
 payonline_hostname: >-
   {{ "payonline.epfl.ch" if inventory_environment == "prod"
       else "payonline-" + inventory_environment + ".epfl.ch" }}
+openshift_image_tag: >-
+  {{ "prod" if inventory_environment == "prod" else "develop" }}

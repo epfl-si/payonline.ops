@@ -78,3 +78,16 @@
         wildcardPolicy: None
   tags:
     - payonline.k8s.route
+
+- name: Promote image
+  when:
+    - >-
+      inventory_environment == "prod"
+    - >-
+      "payonline.k8s.promote" in ansible_run_tags
+  shell:
+    cmd: |
+      oc tag payonline-test/payonline:develop {{ openshift_namespace }}/payonline:{{ openshift_image_tag }}
+  tags:
+    - payonline.k8s.promote
+
