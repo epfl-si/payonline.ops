@@ -109,3 +109,75 @@
   tags:
     - payonline.k8s.promote
 
+- name: Deployment Config
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: apps.openshift.io/v1
+      kind: DeploymentConfig
+      metadata:
+        name: payonline
+        namespace: "{{ openshift_namespace }}"
+        labels:
+          app: payonline
+      spec:
+        replicas: 2
+        selector:
+          app: payonline
+          deploymentconfig: payonline
+        template:
+          metadata:
+            labels:
+              app: payonline
+              deploymentconfig: payonline
+          spec:
+            containers:
+              - env:
+                  - name: TEQUILA_HOST
+                    valueFrom:
+                      configMapKeyRef:
+                        key: TEQUILA_HOST
+                        name: payonline-conf
+                  - name: MOCK_ORACLE
+                    valueFrom:
+                      configMapKeyRef:
+                        key: MOCK_ORACLE
+                        name: payonline-conf
+                  - name: SITE_URL
+                    valueFrom:
+                      configMapKeyRef:
+                        key: SITE_URL
+                        name: payonline-conf
+                  - name: E2EM_LINE
+                    valueFrom:
+                      configMapKeyRef:
+                        key: E2EM_LINE
+                        name: payonline-conf
+                image: >-
+                  {{ openshift_image }}
+                imagePullPolicy: Always
+                name: payonline
+                resources: {}
+                terminationMessagePath: /dev/termination-log
+                terminationMessagePolicy: File
+                volumeMounts:
+                  - mountPath: /opt/dinfo/etc
+                    name: payonline-secret-volume
+            volumes:
+              - name: payonline-secret-volume
+                secret:
+                  secretName: payonline-secrets
+        triggers:
+          - type: ImageChange
+            imageChangeParams:
+              automatic: true
+              containerNames:
+                - payonline
+              from:
+                kind: ImageStreamTag
+                name: "payonline:{{ openshift_image_tag }}"
+                namespace: "{{ openshift_namespace }}"
+          - type: ConfigChange
+  tags:
+    - payonline.k8s.dc
+    - payonline.k8s.deploymentconfig
