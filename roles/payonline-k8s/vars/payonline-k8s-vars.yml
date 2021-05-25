@@ -6,3 +6,6 @@ keybase_secrets:
   prod: >-
     {{ lookup('file', '/keybase/team/epfl_payonline.prod/secrets.yml') | from_yaml }}
   # TODO: have preprod secrets, too
+payonline_hostname: >-
+  {{ "payonline.epfl.ch" if inventory_environment == "prod"
+      else "payonline-" + inventory_environment + ".epfl.ch" }}

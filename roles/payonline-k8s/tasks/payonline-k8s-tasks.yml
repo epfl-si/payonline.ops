@@ -43,3 +43,29 @@
           deploymentconfig: payonline
   tags:
     - payonline.k8s.service
+
+- name: Route
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: route.openshift.io/v1
+      kind: Route
+      metadata:
+        name: payonline-route
+        namespace: "{{ openshift_namespace }}"
+        labels:
+          app: payonline
+          epfl.ch/visibility: public
+      spec:
+        host: "{{ payonline_hostname }}"
+        port:
+          targetPort: 8080-tcp
+        tls:
+          termination: edge
+        to:
+          kind: Service
+          name: payonline-service
+          weight: 100
+        wildcardPolicy: None
+  tags:
+    - payonline.k8s.route
