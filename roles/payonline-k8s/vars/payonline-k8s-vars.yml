@@ -13,3 +13,14 @@ openshift_image_tag: >-
   {{ "prod" if inventory_environment == "prod" else "develop" }}
 openshift_image: >-
   docker-registry.default.svc:5000/{{ openshift_namespace }}/payonline:{{ openshift_image_tag }}
+
+payonline_mail_sf_recipients:
+  preprod:
+    - dominique.quatravaux@epfl.ch
+    - nicolas.borboen@epfl.ch
+  prod:
+    - marc.fromentin@epfl.ch
+    - pascal.schweingruber@epfl.ch
+    - pierre.fournier@epfl.ch
+    - barbara.bouteiller@epfl.ch
+    - ana.henriques@epfl.ch
