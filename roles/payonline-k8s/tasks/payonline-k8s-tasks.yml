@@ -21,3 +21,25 @@
       {{ k }}	{{ v.dbname }}	{{ v.server }}	{{ v.user }}	{{ v.password }}
       {% endfor %}
       payonline	{{ _p.dbname }}	{{ _p.server }}	{{ _p.user }}	{{ _p.password }}
+
+- name: Service
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: payonline-service
+        namespace: "{{ openshift_namespace }}"
+        labels:
+          app: payonline
+      spec:
+        ports:
+          - name: 8080-tcp
+            port: 8080
+            protocol: TCP
+            targetPort: 8080
+        selector:
+          deploymentconfig: payonline
+  tags:
+    - payonline.k8s.service
