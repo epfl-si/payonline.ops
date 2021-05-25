@@ -2,6 +2,9 @@
 # ⚠ Build in preprod, promote to prod (Do not rebuild on prod!)
 
 - name: Secret
+  # Doesn't work in preprod (yet) for lack of adequate things in Keybase:
+  when: >-
+    inventory_environment == "prod"
   community.kubernetes.k8s:
     state: present
     definition:
@@ -110,6 +113,9 @@
     - payonline.k8s.promote
 
 - name: Deployment Config
+  # It works in preprod! Don't mess it up (yet)
+  when: >-
+    inventory_environment == "prod"
   community.kubernetes.k8s:
     state: present
     definition:
