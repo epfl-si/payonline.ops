@@ -2,10 +2,16 @@
 openshift_namespace: >-
   {{ "payonline-test" if inventory_environment == "preprod"
      else "payonline-" + inventory_environment }}
-keybase_secrets:
-  prod: >-
+
+keybase_secrets: >-
+  {{       _keybase_secrets_prod    if inventory_environment == "prod"
+      else _keybase_secrets_preprod if inventory_environment == "preprod"
+      else None }}
+_keybase_secrets_prod: >-
     {{ lookup('file', '/keybase/team/epfl_payonline.prod/secrets.yml') | from_yaml }}
-  # TODO: have preprod secrets, too
+_keybase_secrets_preprod: >-
+    {{ lookup('file', '/keybase/team/epfl_payonline.preprod/secrets.yml') | from_yaml }}
+
 payonline_hostname: >-
   {{ "payonline.epfl.ch" if inventory_environment == "prod"
       else "payonline-" + inventory_environment + ".epfl.ch" }}

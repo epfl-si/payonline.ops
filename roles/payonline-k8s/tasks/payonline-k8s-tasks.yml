@@ -2,9 +2,6 @@
 # ⚠ Build in preprod, promote to prod (Do not rebuild on prod!)
 
 - name: Secret
-  # Doesn't work in preprod (yet) for lack of adequate things in Keybase:
-  when: >-
-    inventory_environment == "prod"
   community.kubernetes.k8s:
     state: present
     definition:
@@ -18,8 +15,7 @@
         dbs.conf:     "{{ _dbs_conf_contents     | b64encode }}"
         secrets.conf: "{{ _secrets_conf_contents | b64encode }}"
   vars:
-    _ks: >-
-      {{ keybase_secrets[inventory_environment] }}
+    _ks: "{{ keybase_secrets }}"
     _p: >-
       {{ _ks.payonline_database }}
     _dbs_conf_contents: |
