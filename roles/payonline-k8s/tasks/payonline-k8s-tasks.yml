@@ -79,6 +79,24 @@
   tags:
     - payonline.k8s.route
 
+- name: Config Map
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: payonline-conf
+        namespace: "{{ openshift_namespace }}"
+      data:
+        E2EM_LINE: "{{ inventory_environment }}"
+        MOCK_ORACLE: "{{ '0' if inventory_environment == 'prod' else '1' }}"
+        SITE_URL: "{{ payonline_hostname }}"
+        TEQUILA_HOST: "{{ 'tequila.epfl.ch' if inventory_environment == 'prod' else 'test-tequila.epfl.ch' }}"
+  tags:
+    - payonline.k8s.config
+    - payonline.k8s.configmap
+
 - name: Promote image
   when:
     - >-
