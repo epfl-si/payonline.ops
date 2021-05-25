@@ -1,0 +1,6 @@
+all:
+  hosts:
+    openshift-preprod:
+      ansible_connection: local
+      ansible_python_interpreter: "{{ paysible_dir }}/ansible-deps-cache/bin/python3"
+      inventory_environment: preprod

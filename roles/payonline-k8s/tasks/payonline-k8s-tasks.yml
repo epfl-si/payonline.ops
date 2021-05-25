@@ -1,0 +1,23 @@
+# TODO: build image in OpenShift (need BuildConfig's and ImageStream's)
+# ⚠ Build in preprod, promote to prod (Do not rebuild on prod!)
+
+- name: Secret
+  community.kubernetes.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: dbs-conf
+        namespace: "{{ openshift_namespace }}"
+      type: Opaque
+      data:
+        dbs.conf: "{{ _dbs_conf_contents | b64encode }}"
+  vars:
+    _p: >-
+      {{ keybase_secrets[inventory_environment].payonline_database }}
+    _dbs_conf_contents: |
+      {% for k, v in keybase_secrets[inventory_environment].cadidb_databases.items() %}
+      {{ k }}	{{ v.dbname }}	{{ v.server }}	{{ v.user }}	{{ v.password }}
+      {% endfor %}
+      payonline	{{ _p.dbname }}	{{ _p.server }}	{{ _p.user }}	{{ _p.password }}

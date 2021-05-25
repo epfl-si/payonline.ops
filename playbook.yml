@@ -1,0 +1,6 @@
+- name: Payonline Kubernetes objects
+  hosts: openshift-prod  # TODO: port to openshift-preprod as well
+  gather_facts: no
+  roles:
+    - role: roles/payonline-k8s
+

@@ -1,0 +1,8 @@
+# TODO: remove the "payonline-test" special case
+openshift_namespace: >-
+  {{ "payonline-test" if inventory_environment == "preprod"
+     else "payonline-" + inventory_environment }}
+keybase_secrets:
+  prod: >-
+    {{ lookup('file', '/keybase/team/epfl_payonline.prod/secrets.yml') | from_yaml }}
+  # TODO: have preprod secrets, too

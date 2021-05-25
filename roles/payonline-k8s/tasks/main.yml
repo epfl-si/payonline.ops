@@ -1,0 +1,9 @@
+- include_vars: payonline-k8s-vars.yml
+  tags: always
+
+- include_tasks:
+    file: payonline-k8s-tasks.yml
+    apply:
+      tags:
+        - payonline.k8s
+  tags: always
