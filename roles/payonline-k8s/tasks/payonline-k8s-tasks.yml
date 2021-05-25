@@ -8,19 +8,28 @@
       apiVersion: v1
       kind: Secret
       metadata:
-        name: dbs-conf
+        name: payonline-secrets
         namespace: "{{ openshift_namespace }}"
       type: Opaque
       data:
-        dbs.conf: "{{ _dbs_conf_contents | b64encode }}"
+        dbs.conf:     "{{ _dbs_conf_contents     | b64encode }}"
+        secrets.conf: "{{ _secrets_conf_contents | b64encode }}"
   vars:
+    _ks: >-
+      {{ keybase_secrets[inventory_environment] }}
     _p: >-
-      {{ keybase_secrets[inventory_environment].payonline_database }}
+      {{ _ks.payonline_database }}
     _dbs_conf_contents: |
-      {% for k, v in keybase_secrets[inventory_environment].cadidb_databases.items() %}
+      {% for k, v in _ks.cadidb_databases.items() %}
       {{ k }}	{{ v.dbname }}	{{ v.server }}	{{ v.user }}	{{ v.password }}
       {% endfor %}
       payonline	{{ _p.dbname }}	{{ _p.server }}	{{ _p.user }}	{{ _p.password }}
+    _secrets_conf_contents: |
+      aga.accred	{{ _ks.aga_accred }}
+      afm.cadi	{{ _ks.afm_cadi }}
+      People.key	{{ _ks.People_key }}
+  tags:
+    - payonline.k8s.secret
 
 - name: Service
   community.kubernetes.k8s:
