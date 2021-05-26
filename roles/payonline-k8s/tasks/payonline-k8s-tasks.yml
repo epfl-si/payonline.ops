@@ -133,13 +133,15 @@
               deploymentconfig: payonline
           spec:
             containers:
-              - env: "{{ payonline_env_from_configmap }}"
+              - name: payonline
                 image: "{{ openshift_image }}"
                 imagePullPolicy: Always
-                name: payonline
                 volumeMounts:
                   - mountPath: /opt/dinfo/etc
                     name: payonline-secret-volume
+                envFrom:
+                  - configMapRef:
+                      name: payonline-conf
             volumes:
               - name: payonline-secret-volume
                 secret:
@@ -181,7 +183,6 @@
               spec:
                 containers:
                 - name: payonline-extract-transactions
-                  env: "{{ payonline_env_from_configmap }}"
                   image: "{{ openshift_image }}"
                   imagePullPolicy: Always
                   volumeMounts:
@@ -189,6 +190,9 @@
                       name: payonline-secret-volume
                   command:
                     - /opt/dinfo/scripts/extract_transactions
+                  envFrom:
+                    - configMapRef:
+                        name: payonline-conf
                 volumes:
                   - name: payonline-secret-volume
                     secret:
