@@ -14,6 +14,7 @@
       data:
         dbs.conf:     "{{ _dbs_conf_contents     | b64encode }}"
         secrets.conf: "{{ _secrets_conf_contents | b64encode }}"
+        params:       "{{ _params_contents       | b64encode }}"
   vars:
     _ks: "{{ keybase_secrets }}"
     _p: >-
@@ -27,6 +28,9 @@
       aga.accred	{{ _ks.aga_accred }}
       afm.cadi	{{ _ks.afm_cadi }}
       People.key	{{ _ks.People_key }}
+    _params_contents: |
+      $ShopID  = '{{ _ks.ShopID }}';
+      $SHAsalt = '{{ _ks.SHAsalt }}';
   tags:
     - payonline.k8s.secret
 
