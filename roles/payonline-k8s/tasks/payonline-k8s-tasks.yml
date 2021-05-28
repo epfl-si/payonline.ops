@@ -29,8 +29,17 @@
       afm.cadi	{{ _ks.afm_cadi }}
       People.key	{{ _ks.People_key }}
     _params_contents: |
-      $ShopID  = '{{ _ks.ShopID }}';
-      $SHAsalt = '{{ _ks.SHAsalt }}';
+      $PayonlineShopID      = '{{ _ks.PayonlineShopID }}';
+      $HMAC_salts  = {
+         epfl => {
+           prod => '{{ _ks.HMAC_salts.epfl.prod }}',
+           test => '{{ _ks.HMAC_salts.epfl.test }}',
+         },
+         unil => {
+           in => '{{ _ks.HMAC_salts.unil.in }}',
+           out => '{{ _ks.HMAC_salts.unil.out }}',
+         }
+      };
   tags:
     - payonline.k8s.secret
 
