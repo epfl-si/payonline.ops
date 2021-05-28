@@ -147,7 +147,6 @@
           spec:
             containers:
               - name: payonline
-                image: "{{ openshift_image }}"
                 imagePullPolicy: Always
                 volumeMounts:
                   - mountPath: /opt/dinfo/etc
