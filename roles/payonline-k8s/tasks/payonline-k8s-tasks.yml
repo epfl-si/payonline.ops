@@ -1,5 +1,5 @@
 # TODO: build image in OpenShift (need BuildConfig's and ImageStream's)
-# ⚠ Build in preprod, promote to prod (Do not rebuild on prod!)
+# ⚠ Build in test, promote to prod (Do not rebuild on prod!)
 
 - name: Secret
   community.kubernetes.k8s:
