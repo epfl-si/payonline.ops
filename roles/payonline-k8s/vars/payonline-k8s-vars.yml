@@ -29,5 +29,9 @@ payonline_mail_sf_recipients:
   prod:
     - payonline-extraits-transactions@groupes.epfl.ch
 
+payonline_instance_validation_notification_email: >-
+  {{ "payonline-validation-instances@groupes.epfl.ch" if inventory_environment == "prod"
+  else "payonline-ops@groupes.epfl.ch" }}
+
 payonline_extract_transaction_cron_schedule: >-
   05 0 * * *

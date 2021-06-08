@@ -109,6 +109,7 @@
         PAYONLINE_MAIL_SF_RECIPIENTS: >-
           {{ payonline_mail_sf_recipients[inventory_environment] | join(", ") }}
         PAYONLINE_SUPERUSER_GROUP: "{{ payonline_superuser_group }}"
+        PAYONLINE_INSTANCE_VALIDATION_NOTIFICATION_EMAIL: "{{ payonline_instance_validation_notification_email }}"
   tags:
     - payonline.k8s.config
     - payonline.k8s.configmap
