@@ -19,6 +19,9 @@ openshift_image_tag: >-
 openshift_image: >-
   docker-registry.default.svc:5000/{{ openshift_namespace }}/payonline:{{ openshift_image_tag }}
 
+payonline_superuser_group: >-
+  {{ "payonline-fi" if inventory_environment == "prod" else "payonline-ops" }}
+
 payonline_mail_sf_recipients:
   test:
     - dominique.quatravaux@epfl.ch

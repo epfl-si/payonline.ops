@@ -108,6 +108,7 @@
         TEQUILA_HOST: "{{ 'tequila.epfl.ch' if inventory_environment == 'prod' else 'test-tequila.epfl.ch' }}"
         PAYONLINE_MAIL_SF_RECIPIENTS: >-
           {{ payonline_mail_sf_recipients[inventory_environment] | join(", ") }}
+        PAYONLINE_SUPERUSER_GROUP: "{{ payonline_superuser_group }}"
   tags:
     - payonline.k8s.config
     - payonline.k8s.configmap
