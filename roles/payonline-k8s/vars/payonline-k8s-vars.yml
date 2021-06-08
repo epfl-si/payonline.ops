@@ -27,10 +27,7 @@ payonline_mail_sf_recipients:
     - dominique.quatravaux@epfl.ch
     - nicolas.borboen@epfl.ch
   prod:
-    - pascal.schweingruber@epfl.ch
-    - pierre.fournier@epfl.ch
-    - barbara.bouteiller@epfl.ch
-    - ana.henriques@epfl.ch
+    - payonline-extraits-transactions@groupes.epfl.ch
 
 payonline_extract_transaction_cron_schedule: >-
   05 0 * * *
