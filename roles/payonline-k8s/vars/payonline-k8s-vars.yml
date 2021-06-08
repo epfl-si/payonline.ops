@@ -33,5 +33,9 @@ payonline_instance_validation_notification_email: >-
   {{ "payonline-validation-instances@groupes.epfl.ch" if inventory_environment == "prod"
   else "payonline-ops@groupes.epfl.ch" }}
 
+payonline_formcont_admin_group: >-
+  {{ "payonline-formcont-admins" if inventory_environment == "prod"
+  else "payonline-ops" }}
+
 payonline_extract_transaction_cron_schedule: >-
   05 0 * * *
