@@ -155,6 +155,9 @@
                 volumeMounts:
                   - mountPath: /opt/dinfo/etc
                     name: payonline-secret-volume
+                env: >-
+                  {{ _additional_env_prod if inventory_environment == "prod"
+                  else _additional_env_test }}
                 envFrom:
                   - configMapRef:
                       name: payonline-conf
@@ -173,6 +176,11 @@
                 name: "payonline:{{ openshift_image_tag }}"
                 namespace: "{{ openshift_namespace }}"
           - type: ConfigChange
+  vars:
+    _additional_env_prod: []
+    _additional_env_test:
+      - name: FORMCONT_TEST_MODE
+        value: "1"
   tags:
     - payonline.k8s.dc
     - payonline.k8s.deploymentconfig
