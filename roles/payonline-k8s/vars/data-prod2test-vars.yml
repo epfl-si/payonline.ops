@@ -1,0 +1,8 @@
+data_prod2test_kubectl_exec_in_namespace: >-
+ kubectl exec {{ kubectlflags | default("") }} -n {{ namespace }}
+ $(kubectl get pods -n {{ namespace }} -o name|grep 'pod/payonline-[0-9]')
+ --
+data_prod2test_perl_parse_creds: >-
+ open(DBS, "<", "/opt/dinfo/etc/dbs.conf");
+ while(<DBS>) { chomp; my ($dbkey, $db, $host, $user, $pass) = split m/\t+/;
+ next unless $dbkey eq "payonline"

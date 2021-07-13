@@ -1,0 +1,50 @@
+- include_vars: data-prod2test-vars.yml
+
+- tempfile: {}
+  register: data_prod2test_tempfile
+
+- name: Backup in prod
+  run_once: true
+  local_action:
+    module: shell
+    cmd: >-
+      {{ data_prod2test_kubectl_exec_in_namespace }}
+      perl -e '{{ data_prod2test_perl_parse_creds }};
+      open(my $dumpfd, "-|", "mysqldump", "--default-character-set=utf8",
+      "--host=$host", "--user=$user", "--password=$pass", $db) or die $@;
+      {#- Sigh. https://dba.stackexchange.com/a/29576/35786 et al -#}
+      my ($quote, $doublequote, $backslash) = (chr(39), chr(34), chr(92));
+      while(<$dumpfd>) {
+      chomp; s/\r$//;
+      s/\Q$backslash$quote\E/$quote$quote/g;
+      s/\Q$backslash$doublequote\E/$doublequote/g;
+      {#- For debugging purposes only: make line numbers meaningful -#}
+      s/^INSERT INTO (.*?)(\(.*\));$/"INSERT INTO $1 " . split_insert_parens($2) . ";"/e;
+      print "$_\n";
+      };
+      close($dumpfd); exit $?;
+      };   {#- Closes an opening brace in data_prod2test_perl_parse_creds  -#}
+      sub split_insert_parens{
+      local $_ = shift;
+      my $quote = chr(39);
+      my @toks = split m/((?:NULL|[0-9]+|$quote[^$quote]*$quote)+)/;
+      map { $_ = "),\n(" if $_ eq "),(" } @toks;
+      return join("", @toks);
+      }'
+      > {{ data_prod2test_tempfile }}
+  vars:
+    namespace: payonline-prod
+
+- name: Restore in test
+  run_once: true
+  local_action:
+    module: shell
+    cmd: >-
+      {{ data_prod2test_kubectl_exec_in_namespace }}
+      perl -e '{{ data_prod2test_perl_parse_creds }};
+      exec("mysql", "--default-character-set=utf8",
+      "--host=$host", "--user=$user", "--password=$pass", $db) }'
+      < {{ data_prod2test_tempfile }}
+  vars:
+    namespace: payonline-test
+    kubectlflags: -i

@@ -226,3 +226,10 @@
     _all_the_time: "* * * * *"
   tags:
     - payonline.k8s.cron
+
+- name: Copy prod data to test
+  when: >-
+    "payonline.k8s.prod2test" in ansible_run_tags
+  include_tasks: data-prod2test.yml
+  tags:
+    - payonline.k8s.prod2test
