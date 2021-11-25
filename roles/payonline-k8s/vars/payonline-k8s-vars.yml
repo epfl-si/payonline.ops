@@ -39,3 +39,11 @@ payonline_formcont_admin_group: >-
 
 payonline_extract_transaction_cron_schedule: >-
   05 0 * * *
+
+payonline_build_namespace: payonline-test
+openshift_local_images_base: >-
+  docker-registry.default.svc:5000/{{ openshift_namespace }}
+payonline_base_image: >-
+  {{ "debian:buster-slim" |
+  parse_external_docker_tag(mirrored_base=openshift_local_images_base) }}
+payonline_image_name: payonline

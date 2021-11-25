@@ -42,6 +42,7 @@ platform_check () {
             SUITCASE_ANSIBLE_VERSION=4.0.0 \
             SUITCASE_DIR=$PWD/ansible-deps-cache \
             SUITCASE_PIP_EXTRA="bcrypt passlib openshift" \
+            SUITCASE_ANSIBLE_REQUIREMENTS=requirements.yml \
             SUITCASE_NO_EYAML=1 \
             bash -x
     fi

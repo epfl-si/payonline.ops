@@ -1,0 +1,40 @@
+- name: "`idevfsd-checkouter` secret (ssh key pair)"
+  when: openshift_namespace == payonline_build_namespace
+  openshift:
+    state: latest
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: idevfsd-checkouter
+      namespace: '{{ openshift_namespace }}'
+      annotations:
+        openshift.io/description: Add the SSH key for idevfsd-checkouter, used to git clone the project
+    type: kubernetes.io/ssh-auth
+    data:
+      ssh-privatekey:  >-
+        {{ keybase_secrets.c4science.id_rsa | base64 }}
+      known_hosts: >-
+        {{ lookup("pipe", "ssh-keyscan c4science.ch 2>/dev/null | sort")
+        | base64 }}
+
+- name: "Mirror {{ payonline_base_image.qualified }} to {{ payonline_base_image.mirrored }}"
+  when: openshift_namespace == payonline_build_namespace
+  openshift_imagestream:
+    metadata:
+      name: "{{ payonline_base_image.shortname }}"
+      namespace: "{{ openshift_namespace }}"
+    from: "{{ payonline_base_image.qualified }}"
+    tag: "{{ payonline_base_image.tag | string }}"
+
+- name: "Build {{ payonline_image_name }} in OpenShift"
+  when: openshift_namespace == payonline_build_namespace
+  openshift_imagestream:
+    metadata:
+      name: "{{ payonline_image_name }}"
+      namespace: "{{ openshift_namespace }}"
+    git:
+      repository: ssh://git@c4science.ch/diffusion/7764/payonline-epfl-ch.git
+    spec:
+      source:
+        sourceSecret:
+          name: idevfsd-checkouter

@@ -1,5 +1,9 @@
-# TODO: build image in OpenShift (need BuildConfig's and ImageStream's)
-# ⚠ Build in test, promote to prod (Do not rebuild on prod!)
+- name: Build
+  include_tasks:
+    file: build.yml
+    apply:
+      tags: payonline.k8s.build
+  tags: payonline.k8s.build
 
 - name: Secret
   community.kubernetes.k8s:
