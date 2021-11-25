@@ -38,3 +38,15 @@
       source:
         sourceSecret:
           name: idevfsd-checkouter
+
+- name: Promote image
+  when:
+    - >-
+      openshift_namespace != payonline_build_namespace
+    - >-
+      "payonline.k8s.promote" in ansible_run_tags
+  shell:
+    cmd: |
+      oc tag {{ payonline_build_namespace }}/payonline:latest {{ openshift_namespace }}/payonline:latest
+  tags:
+    - payonline.k8s.promote

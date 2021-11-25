@@ -1,9 +1,11 @@
-- name: Build
+- name: Build or promote image
   include_tasks:
     file: build.yml
     apply:
       tags: payonline.k8s.build
-  tags: payonline.k8s.build
+  tags:
+    - payonline.k8s.build
+    - payonline.k8s.promote
 
 - name: Secret
   community.kubernetes.k8s:
@@ -119,18 +121,6 @@
     - payonline.k8s.config
     - payonline.k8s.configmap
 
-- name: Promote image
-  when:
-    - >-
-      inventory_environment == "prod"
-    - >-
-      "payonline.k8s.promote" in ansible_run_tags
-  shell:
-    cmd: |
-      oc tag payonline-test/payonline:develop {{ openshift_namespace }}/payonline:{{ openshift_image_tag }}
-  tags:
-    - payonline.k8s.promote
-
 - name: Deployment Config
   community.kubernetes.k8s:
     state: present
@@ -177,7 +167,7 @@
                 - payonline
               from:
                 kind: ImageStreamTag
-                name: "payonline:{{ openshift_image_tag }}"
+                name: "payonline:latest"
                 namespace: "{{ openshift_namespace }}"
           - type: ConfigChange
   vars:
