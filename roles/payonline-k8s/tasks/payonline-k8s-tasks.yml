@@ -110,7 +110,6 @@
         E2EM_LINE: >-
           {{ "prod" if inventory_environment == "prod" else "test" }}
         MOCK_ORACLE: "{{ '0' if inventory_environment == 'prod' else '1' }}"
-        SITE_URL: "{{ payonline_hostname }}"
         TEQUILA_HOST: "{{ 'tequila.epfl.ch' if inventory_environment == 'prod' else 'test-tequila.epfl.ch' }}"
         PAYONLINE_MAIL_SF_RECIPIENTS: >-
           {{ payonline_mail_sf_recipients[inventory_environment] | join(", ") }}
