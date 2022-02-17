@@ -9,27 +9,26 @@ Based on [Ansible](https://docs.ansible.com/ansible/latest/index.html) and [ansi
 
 ## Common Tasks
 
-### Build a new image
-
-This is unfortunately not yet integrated with Ansible or OpenShift.
-
-```
-git clone --recurse-submodules ssh://git@c4science.ch/diffusion/7764/payonline-epfl-ch.git
-./payonline-epfl-ch/deploy_os.sh
-```
-
 ### Push the configuration-as-code to test
-
-This creates Kubernetes objects necessary for running the image and
-connecting it to the outside world at https://payonline-preprod.epfl.ch/
 
 ```
 ./paysible
 ```
 
+### Build a new image
+
+```
+./paysible -t payonline.k8s.build
+```
+
+💡 Passing the `payonline.k8s.build` tag forces the build to start now (even if the relevant Kubernetes objects have no changes)
+
+This makes the latest version of the application available at https://payonline-preprod.epfl.ch/
+
+
 ### Promote to Production
 
-Likewise, but to https://payonline.epfl.ch/
+Once the tests are satisfactory, here is how to push the exact same image onto https://payonline.epfl.ch/ :
 
 ```
 ./paysible --prod -t payonline.k8s,payonline.k8s.promote
