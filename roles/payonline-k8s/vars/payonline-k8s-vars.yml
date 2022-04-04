@@ -36,7 +36,7 @@ payonline_formcont_admin_group: >-
   else "payonline-ops" }}
 
 payonline_extract_transaction_cron_schedule: >-
-  05 0 * * *
+  05 4 * * *
 
 payonline_build_namespace: payonline-test
 openshift_local_images_base: >-
