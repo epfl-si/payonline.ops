@@ -42,6 +42,6 @@ payonline_build_namespace: payonline-test
 openshift_local_images_base: >-
   docker-registry.default.svc:5000/{{ openshift_namespace }}
 payonline_base_image: >-
-  {{ "debian:buster-slim" |
+  {{ "ghcr.io/epfl-si/common-web:1.6.0" |
   parse_external_docker_tag(mirrored_base=openshift_local_images_base) }}
 payonline_image_name: payonline

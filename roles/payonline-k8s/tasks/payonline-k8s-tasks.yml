@@ -5,6 +5,8 @@
       tags: payonline.k8s.build
   tags:
     - payonline.k8s.build
+    - payonline.k8s.build.secrets
+    - payonline.k8s.build.baseimage
     - payonline.k8s.promote
 
 - name: Secret

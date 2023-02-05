@@ -1,11 +1,66 @@
+- name: "ghcr.io credentials"
+  when: openshift_namespace == payonline_build_namespace
+  openshift:
+    apiVersion: v1
+    kind: Secret
+    metadata:
+      name: ghcr-io-credentials
+      namespace: '{{ openshift_namespace }}'
+    type: kubernetes.io/dockerconfigjson
+    data:
+      .dockerconfigjson: "{{ _docker_auths_dict | to_json | b64encode }}"
+  vars:
+    _docker_auths_dict:
+      # https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+      auths:
+        "https://ghcr.io/":
+          "auth": "{{ _loginpassword | b64encode }}"
+    _loginpassword: >-
+      {{ "%s:%s" % (_login, _password) }}
+    _login: "{{ keybase_secrets.github.personal_access_token.user }}"
+    _password: "{{ keybase_secrets.github.personal_access_token.token }}"
+  tags: payonline.k8s.build.secrets
+
+- name: "`oc secrets link` into the {{ _builder_service_account }} service account"
+  when: openshift_namespace == ticketshop_build_openshift_namespace
+  shell:
+    cmd: |
+      set -e -x
+      case "$(oc -n {{ openshift_namespace }} get -o yaml \
+                 serviceaccount {{ _builder_service_account }})" in
+        *"- name: {{ _docker_hub_secret_name }}"*)
+          echo "ALREADY_LINKED"
+          exit 0;;
+        *)
+        oc -n {{ openshift_namespace }} secrets link {{ _builder_service_account }} {{ _docker_hub_secret_name }} --for=pull
+      esac
+  vars:
+    _docker_hub_secret_name: ghcr-io-credentials   # See above
+    _builder_service_account: builder  # And not `default`, as incorrectly blogged about
+  register: _oc_secrets_link
+  changed_when: >-
+    _oc_secrets_link
+    and
+    ( "ALREADY_LINKED" not in _oc_secrets_link.stdout )
+  tags: payonline.k8s.build.secrets
+
 - name: "Mirror {{ payonline_base_image.qualified }} to {{ payonline_base_image.mirrored }}"
   when: openshift_namespace == payonline_build_namespace
-  openshift_imagestream:
+  openshift:
+    kind: ImageStream
+    apiVersion: image.openshift.io/v1
     metadata:
       name: "{{ payonline_base_image.shortname }}"
       namespace: "{{ openshift_namespace }}"
-    from: "{{ payonline_base_image.qualified }}"
-    tag: "{{ payonline_base_image.tag | string }}"
+    spec:
+      tags:
+        - name: '{{ payonline_base_image.tag }}'
+          from:
+            kind: DockerImage
+            name: '{{ payonline_base_image.qualified }}'
+          importPolicy:
+            scheduled: true
+  tags: payonline.k8s.build.baseimage
 
 - name: "Build {{ payonline_image_name }} in OpenShift"
   when: openshift_namespace == payonline_build_namespace
@@ -14,12 +69,8 @@
       name: "{{ payonline_image_name }}"
       namespace: "{{ openshift_namespace }}"
     git:
-      repository: ssh://git@c4science.ch/diffusion/7764/payonline-epfl-ch.git
+      repository: https://github.com/epfl-si/payonline.git
     from: "{{ payonline_base_image.mirrored }}"
-    spec:
-      source:
-        sourceSecret:
-          name: idevfsd-checkouter
   register: _payonline_imagestream
 
 - name: "Rebuild {{ payonline_image_name }} now"
