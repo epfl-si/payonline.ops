@@ -22,7 +22,7 @@
   tags: payonline.k8s.build.secrets
 
 - name: "`oc secrets link` into the {{ _builder_service_account }} service account"
-  when: openshift_namespace == ticketshop_build_openshift_namespace
+  when: openshift_namespace == payonline_build_openshift_namespace
   shell:
     cmd: |
       set -e -x
